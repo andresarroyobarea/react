@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>body{background-color:white;}</style>
+<style type="text/css">
+.Rtable1 table, table.Rtable1 {
+font-family: "Arial", Arial, sans-serif;
+font-size: 10pt;
+border-collapse: collapse;
+padding: 0px;
+margin: 0px;
+
+}
+.Rtable1 td {
+white-space:nowrap;
+}
+.Rtable1 th, .Rtable1 td {
+border: 0;
+text-align: center;
+padding: 0.5ex 1.5ex;
+margin: 0px;
+}
+.Rtable1 thead>tr:first-child>th {
+border-top: 2pt solid black;
+}
+.Rtable1 thead>tr:last-child>th {
+border-bottom: 1pt solid black;
+}
+.Rtable1 tbody>tr:last-child>td {
+border-bottom: 2pt solid black;
+}
+.Rtable1 th.grouplabel {
+padding-left: 0;
+padding-right: 0;
+}
+.Rtable1 th.grouplabel>div {
+margin-left: 1.5ex;
+margin-right: 1.5ex;
+border-bottom: 1pt solid black;
+}
+.Rtable1 th.grouplabel:last-child>div {
+margin-right: 0;
+}
+.Rtable1 .rowlabel {
+text-align: left;
+padding-left: 2.5ex;
+}
+.Rtable1 .firstrow.rowlabel {
+padding-left: 0.5ex;
+font-weight: bold;
+}
+
+.Rtable1-zebra tbody tr:nth-child(odd) {
+background-color: #eee;
+}
+
+table.Rtable1-times {
+font-family: "Times New Roman", Times, serif;
+}
+
+.Rtable1-shade th {
+background-color: #ccc;
+}
+
+.Rtable1-grid th, .Rtable1-grid td {
+border-left: 1pt solid black;
+border-right: 1pt solid black;
+}
+.Rtable1-grid thead>tr:first-child>th {
+border-top: 1pt solid black;
+}
+.Rtable1-grid thead>tr:last-child>th {
+border-bottom: 1pt solid black;
+}
+.Rtable1-grid tbody>tr:last-child>td {
+border-bottom: 1pt solid black;
+}
+.Rtable1-grid .firstrow, .Rtable1-grid .firstrow ~ td {
+border-top: 1pt solid black;
+}
+.Rtable1-grid th.grouplabel>div {
+margin-left: 0;
+margin-right: 0;
+border-bottom: 0;
+}
+
+.Rtable1-center td.rowlabel, .Rtable1-center td.firstrow.rowlabel {
+font-weight: bold;
+text-align: center;
+padding: 0.5ex 1.5ex;
+}
+
+.Rtable1 .Rtable1-footnote {
+font-size: smaller;
+padding: 0px;
+margin: 0px;
+text-align: left;
+}
+</style>
+
+</head>
+<body>
+<div class="Rtable1"><table class="Rtable1-grid Rtable1-shade Rtable1-times">
+<thead>
+<tr>
+<th class="rowlabel firstrow lastrow"></th>
+<th class="firstrow lastrow"><span class="stratlabel">1º Periodo (01/03/2021-30/11/2021)<br><span class="stratn">(N=42)</span></span></th>
+<th class="firstrow lastrow"><span class="stratlabel">2º Periodo (01/12/2021-28/02/2022)<br><span class="stratn">(N=123)</span></span></th>
+<th class="firstrow lastrow"><span class="stratlabel">3º Periodo (01/03/2022-15/07/2022)<br><span class="stratn">(N=181)</span></span></th>
+<th class="firstrow lastrow"><span class="stratlabel">Total<br><span class="stratn">(N=346)</span></span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="rowlabel firstrow">edad</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">Mean (SD)</td>
+<td>62.9 (15.6)</td>
+<td>64.0 (15.2)</td>
+<td>65.2 (16.1)</td>
+<td>64.5 (15.7)</td>
+</tr>
+<tr>
+<td class="rowlabel">Median [Min, Max]</td>
+<td>63.5 [21.0, 90.0]</td>
+<td>65.0 [22.0, 93.0]</td>
+<td>68.0 [20.0, 98.0]</td>
+<td>66.5 [20.0, 98.0]</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">[Q1, Q3]</td>
+<td class="lastrow">[54.8, 73.5]</td>
+<td class="lastrow">[55.0, 76.5]</td>
+<td class="lastrow">[55.0, 77.0]</td>
+<td class="lastrow">[55.0, 77.0]</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">edad_grupo</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">18-49</td>
+<td>8 (19.0%)</td>
+<td>24 (19.5%)</td>
+<td>28 (15.5%)</td>
+<td>60 (17.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel">49-59</td>
+<td>8 (19.0%)</td>
+<td>22 (17.9%)</td>
+<td>33 (18.2%)</td>
+<td>63 (18.2%)</td>
+</tr>
+<tr>
+<td class="rowlabel">59-69</td>
+<td>10 (23.8%)</td>
+<td>28 (22.8%)</td>
+<td>36 (19.9%)</td>
+<td>74 (21.4%)</td>
+</tr>
+<tr>
+<td class="rowlabel">69-79</td>
+<td>10 (23.8%)</td>
+<td>30 (24.4%)</td>
+<td>52 (28.7%)</td>
+<td>92 (26.6%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">&gt;=80</td>
+<td class="lastrow">6 (14.3%)</td>
+<td class="lastrow">19 (15.4%)</td>
+<td class="lastrow">32 (17.7%)</td>
+<td class="lastrow">57 (16.5%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">sexo</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">H</td>
+<td>23 (54.8%)</td>
+<td>67 (54.5%)</td>
+<td>92 (50.8%)</td>
+<td>182 (52.6%)</td>
+</tr>
+<tr>
+<td class="rowlabel">M</td>
+<td>19 (45.2%)</td>
+<td>54 (43.9%)</td>
+<td>89 (49.2%)</td>
+<td>162 (46.8%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Missing</td>
+<td class="lastrow">0 (0%)</td>
+<td class="lastrow">2 (1.6%)</td>
+<td class="lastrow">0 (0%)</td>
+<td class="lastrow">2 (0.6%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow lastrow">comor_cardiaca</td>
+<td class="firstrow lastrow">3 (7.1%)</td>
+<td class="firstrow lastrow">17 (13.8%)</td>
+<td class="firstrow lastrow">24 (13.3%)</td>
+<td class="firstrow lastrow">44 (12.7%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow lastrow">comor_pulmonar</td>
+<td class="firstrow lastrow">3 (7.1%)</td>
+<td class="firstrow lastrow">8 (6.5%)</td>
+<td class="firstrow lastrow">7 (3.9%)</td>
+<td class="firstrow lastrow">18 (5.2%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow lastrow">comor_hta</td>
+<td class="firstrow lastrow">11 (26.2%)</td>
+<td class="firstrow lastrow">31 (25.2%)</td>
+<td class="firstrow lastrow">41 (22.7%)</td>
+<td class="firstrow lastrow">83 (24.0%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow lastrow">comor_asma</td>
+<td class="firstrow lastrow">0 (0%)</td>
+<td class="firstrow lastrow">3 (2.4%)</td>
+<td class="firstrow lastrow">3 (1.7%)</td>
+<td class="firstrow lastrow">6 (1.7%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow lastrow">comor_renal</td>
+<td class="firstrow lastrow">3 (7.1%)</td>
+<td class="firstrow lastrow">10 (8.1%)</td>
+<td class="firstrow lastrow">10 (5.5%)</td>
+<td class="firstrow lastrow">23 (6.6%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow lastrow">comor_hepatica</td>
+<td class="firstrow lastrow">0 (0%)</td>
+<td class="firstrow lastrow">1 (0.8%)</td>
+<td class="firstrow lastrow">0 (0%)</td>
+<td class="firstrow lastrow">1 (0.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow lastrow">comor_neoplasia</td>
+<td class="firstrow lastrow">4 (9.5%)</td>
+<td class="firstrow lastrow">9 (7.3%)</td>
+<td class="firstrow lastrow">15 (8.3%)</td>
+<td class="firstrow lastrow">28 (8.1%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow lastrow">comor_diabetes</td>
+<td class="firstrow lastrow">4 (9.5%)</td>
+<td class="firstrow lastrow">12 (9.8%)</td>
+<td class="firstrow lastrow">13 (7.2%)</td>
+<td class="firstrow lastrow">29 (8.4%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow lastrow">comor_bmi</td>
+<td class="firstrow lastrow">1 (2.4%)</td>
+<td class="firstrow lastrow">3 (2.4%)</td>
+<td class="firstrow lastrow">2 (1.1%)</td>
+<td class="firstrow lastrow">6 (1.7%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow lastrow">comor_reuma</td>
+<td class="firstrow lastrow">1 (2.4%)</td>
+<td class="firstrow lastrow">3 (2.4%)</td>
+<td class="firstrow lastrow">6 (3.3%)</td>
+<td class="firstrow lastrow">10 (2.9%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">comorbidities_groups</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">0</td>
+<td>23 (54.8%)</td>
+<td>62 (50.4%)</td>
+<td>101 (55.8%)</td>
+<td>186 (53.8%)</td>
+</tr>
+<tr>
+<td class="rowlabel">1</td>
+<td>14 (33.3%)</td>
+<td>39 (31.7%)</td>
+<td>47 (26.0%)</td>
+<td>100 (28.9%)</td>
+</tr>
+<tr>
+<td class="rowlabel">2</td>
+<td>1 (2.4%)</td>
+<td>12 (9.8%)</td>
+<td>27 (14.9%)</td>
+<td>40 (11.6%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">&gt;=3</td>
+<td class="lastrow">4 (9.5%)</td>
+<td class="lastrow">10 (8.1%)</td>
+<td class="lastrow">6 (3.3%)</td>
+<td class="lastrow">20 (5.8%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">comorbidities_continous</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">Mean (SD)</td>
+<td>0.714 (1.09)</td>
+<td>0.789 (1.03)</td>
+<td>0.669 (0.889)</td>
+<td>0.717 (0.966)</td>
+</tr>
+<tr>
+<td class="rowlabel">Median [Min, Max]</td>
+<td>0 [0, 5.00]</td>
+<td>0 [0, 5.00]</td>
+<td>0 [0, 4.00]</td>
+<td>0 [0, 5.00]</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">[Q1, Q3]</td>
+<td class="lastrow">[0, 1.00]</td>
+<td class="lastrow">[0, 1.00]</td>
+<td class="lastrow">[0, 1.00]</td>
+<td class="lastrow">[0, 1.00]</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow lastrow">comor_otras</td>
+<td class="firstrow lastrow">4 (9.5%)</td>
+<td class="firstrow lastrow">11 (8.9%)</td>
+<td class="firstrow lastrow">10 (5.5%)</td>
+<td class="firstrow lastrow">25 (7.2%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">patologia</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">LH</td>
+<td>2 (4.8%)</td>
+<td>6 (4.9%)</td>
+<td>5 (2.8%)</td>
+<td>13 (3.8%)</td>
+</tr>
+<tr>
+<td class="rowlabel">LLA</td>
+<td>0 (0%)</td>
+<td>5 (4.1%)</td>
+<td>10 (5.5%)</td>
+<td>15 (4.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel">LLC</td>
+<td>4 (9.5%)</td>
+<td>15 (12.2%)</td>
+<td>24 (13.3%)</td>
+<td>43 (12.4%)</td>
+</tr>
+<tr>
+<td class="rowlabel">LMA</td>
+<td>4 (9.5%)</td>
+<td>12 (9.8%)</td>
+<td>23 (12.7%)</td>
+<td>39 (11.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel">LMC</td>
+<td>0 (0%)</td>
+<td>4 (3.3%)</td>
+<td>1 (0.6%)</td>
+<td>5 (1.4%)</td>
+</tr>
+<tr>
+<td class="rowlabel">MM</td>
+<td>12 (28.6%)</td>
+<td>30 (24.4%)</td>
+<td>43 (23.8%)</td>
+<td>85 (24.6%)</td>
+</tr>
+<tr>
+<td class="rowlabel">NHL</td>
+<td>20 (47.6%)</td>
+<td>46 (37.4%)</td>
+<td>63 (34.8%)</td>
+<td>129 (37.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">SMD</td>
+<td class="lastrow">0 (0%)</td>
+<td class="lastrow">5 (4.1%)</td>
+<td class="lastrow">12 (6.6%)</td>
+<td class="lastrow">17 (4.9%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">tph</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">AUTOLOGO</td>
+<td>8 (19.0%)</td>
+<td>19 (15.4%)</td>
+<td>19 (10.5%)</td>
+<td>46 (13.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel">ALOGENICO</td>
+<td>1 (2.4%)</td>
+<td>9 (7.3%)</td>
+<td>8 (4.4%)</td>
+<td>18 (5.2%)</td>
+</tr>
+<tr>
+<td class="rowlabel">CART</td>
+<td>1 (2.4%)</td>
+<td>2 (1.6%)</td>
+<td>8 (4.4%)</td>
+<td>11 (3.2%)</td>
+</tr>
+<tr>
+<td class="rowlabel">NO</td>
+<td>31 (73.8%)</td>
+<td>89 (72.4%)</td>
+<td>139 (76.8%)</td>
+<td>259 (74.9%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Missing</td>
+<td class="lastrow">1 (2.4%)</td>
+<td class="lastrow">4 (3.3%)</td>
+<td class="lastrow">7 (3.9%)</td>
+<td class="lastrow">12 (3.5%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">tratamiento_tipo</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">Conventional QT</td>
+<td>12 (28.6%)</td>
+<td>24 (19.5%)</td>
+<td>31 (17.1%)</td>
+<td>67 (19.4%)</td>
+</tr>
+<tr>
+<td class="rowlabel">INMUNO-QT</td>
+<td>7 (16.7%)</td>
+<td>28 (22.8%)</td>
+<td>30 (16.6%)</td>
+<td>65 (18.8%)</td>
+</tr>
+<tr>
+<td class="rowlabel">Molecular targeted</td>
+<td>4 (9.5%)</td>
+<td>20 (16.3%)</td>
+<td>30 (16.6%)</td>
+<td>54 (15.6%)</td>
+</tr>
+<tr>
+<td class="rowlabel">MoAb</td>
+<td>3 (7.1%)</td>
+<td>11 (8.9%)</td>
+<td>25 (13.8%)</td>
+<td>39 (11.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel">IMIDS</td>
+<td>3 (7.1%)</td>
+<td>9 (7.3%)</td>
+<td>13 (7.2%)</td>
+<td>25 (7.2%)</td>
+</tr>
+<tr>
+<td class="rowlabel">Hypomethylating agents</td>
+<td>0 (0%)</td>
+<td>6 (4.9%)</td>
+<td>9 (5.0%)</td>
+<td>15 (4.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel">Not DETAILLED</td>
+<td>3 (7.1%)</td>
+<td>8 (6.5%)</td>
+<td>13 (7.2%)</td>
+<td>24 (6.9%)</td>
+</tr>
+<tr>
+<td class="rowlabel">Supportive care</td>
+<td>0 (0%)</td>
+<td>1 (0.8%)</td>
+<td>6 (3.3%)</td>
+<td>7 (2.0%)</td>
+</tr>
+<tr>
+<td class="rowlabel">No active therapy</td>
+<td>1 (2.4%)</td>
+<td>5 (4.1%)</td>
+<td>16 (8.8%)</td>
+<td>22 (6.4%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Missing</td>
+<td class="lastrow">9 (21.4%)</td>
+<td class="lastrow">11 (8.9%)</td>
+<td class="lastrow">8 (4.4%)</td>
+<td class="lastrow">28 (8.1%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">manejo</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">Ambulatorio</td>
+<td>17 (40.5%)</td>
+<td>77 (62.6%)</td>
+<td>121 (66.9%)</td>
+<td>215 (62.1%)</td>
+</tr>
+<tr>
+<td class="rowlabel">Ingreso hospitalario</td>
+<td>24 (57.1%)</td>
+<td>45 (36.6%)</td>
+<td>59 (32.6%)</td>
+<td>128 (37.0%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Missing</td>
+<td class="lastrow">1 (2.4%)</td>
+<td class="lastrow">1 (0.8%)</td>
+<td class="lastrow">1 (0.6%)</td>
+<td class="lastrow">3 (0.9%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">covida_gravedad</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">GRAVE</td>
+<td>9 (21.4%)</td>
+<td>7 (5.7%)</td>
+<td>4 (2.2%)</td>
+<td>20 (5.8%)</td>
+</tr>
+<tr>
+<td class="rowlabel">LEVE</td>
+<td>27 (64.3%)</td>
+<td>101 (82.1%)</td>
+<td>159 (87.8%)</td>
+<td>287 (82.9%)</td>
+</tr>
+<tr>
+<td class="rowlabel">MODERADO</td>
+<td>6 (14.3%)</td>
+<td>15 (12.2%)</td>
+<td>17 (9.4%)</td>
+<td>38 (11.0%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Missing</td>
+<td class="lastrow">0 (0%)</td>
+<td class="lastrow">0 (0%)</td>
+<td class="lastrow">1 (0.6%)</td>
+<td class="lastrow">1 (0.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">covida_gravedad_simplified</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">ALTA</td>
+<td>9 (21.4%)</td>
+<td>7 (5.7%)</td>
+<td>4 (2.2%)</td>
+<td>20 (5.8%)</td>
+</tr>
+<tr>
+<td class="rowlabel">BAJA</td>
+<td>33 (78.6%)</td>
+<td>116 (94.3%)</td>
+<td>176 (97.2%)</td>
+<td>325 (93.9%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Missing</td>
+<td class="lastrow">0 (0%)</td>
+<td class="lastrow">0 (0%)</td>
+<td class="lastrow">1 (0.6%)</td>
+<td class="lastrow">1 (0.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">covida_gravedad_maxima</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">CRÍTICO</td>
+<td>9 (21.4%)</td>
+<td>19 (15.4%)</td>
+<td>9 (5.0%)</td>
+<td>37 (10.7%)</td>
+</tr>
+<tr>
+<td class="rowlabel">GRAVE</td>
+<td>8 (19.0%)</td>
+<td>11 (8.9%)</td>
+<td>9 (5.0%)</td>
+<td>28 (8.1%)</td>
+</tr>
+<tr>
+<td class="rowlabel">LEVE</td>
+<td>19 (45.2%)</td>
+<td>77 (62.6%)</td>
+<td>145 (80.1%)</td>
+<td>241 (69.7%)</td>
+</tr>
+<tr>
+<td class="rowlabel">MODERADO</td>
+<td>6 (14.3%)</td>
+<td>16 (13.0%)</td>
+<td>17 (9.4%)</td>
+<td>39 (11.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Missing</td>
+<td class="lastrow">0 (0%)</td>
+<td class="lastrow">0 (0%)</td>
+<td class="lastrow">1 (0.6%)</td>
+<td class="lastrow">1 (0.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">covida_gravedad_maxima_simplified</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">ALTA</td>
+<td>17 (40.5%)</td>
+<td>30 (24.4%)</td>
+<td>18 (9.9%)</td>
+<td>65 (18.8%)</td>
+</tr>
+<tr>
+<td class="rowlabel">BAJA</td>
+<td>25 (59.5%)</td>
+<td>93 (75.6%)</td>
+<td>162 (89.5%)</td>
+<td>280 (80.9%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Missing</td>
+<td class="lastrow">0 (0%)</td>
+<td class="lastrow">0 (0%)</td>
+<td class="lastrow">1 (0.6%)</td>
+<td class="lastrow">1 (0.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">dem_ultimoseguimiento</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">Muerto por COVID-19</td>
+<td>10 (23.8%)</td>
+<td>13 (10.6%)</td>
+<td>4 (2.2%)</td>
+<td>27 (7.8%)</td>
+</tr>
+<tr>
+<td class="rowlabel">Muerto por otras causas</td>
+<td>1 (2.4%)</td>
+<td>5 (4.1%)</td>
+<td>7 (3.9%)</td>
+<td>13 (3.8%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Vivo</td>
+<td class="lastrow">31 (73.8%)</td>
+<td class="lastrow">105 (85.4%)</td>
+<td class="lastrow">170 (93.9%)</td>
+<td class="lastrow">306 (88.4%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">dem_ultimoseguimiento_simplified</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">Muerto</td>
+<td>11 (26.2%)</td>
+<td>18 (14.6%)</td>
+<td>11 (6.1%)</td>
+<td>40 (11.6%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Vivo</td>
+<td class="lastrow">31 (73.8%)</td>
+<td class="lastrow">105 (85.4%)</td>
+<td class="lastrow">170 (93.9%)</td>
+<td class="lastrow">306 (88.4%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">dem_vac_sino</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">NO</td>
+<td>6 (14.3%)</td>
+<td>7 (5.7%)</td>
+<td>6 (3.3%)</td>
+<td>19 (5.5%)</td>
+</tr>
+<tr>
+<td class="rowlabel">SI</td>
+<td>28 (66.7%)</td>
+<td>99 (80.5%)</td>
+<td>162 (89.5%)</td>
+<td>289 (83.5%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Missing</td>
+<td class="lastrow">8 (19.0%)</td>
+<td class="lastrow">17 (13.8%)</td>
+<td class="lastrow">13 (7.2%)</td>
+<td class="lastrow">38 (11.0%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">xt_PAXLOVID</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">No</td>
+<td>33 (78.6%)</td>
+<td>105 (85.4%)</td>
+<td>121 (66.9%)</td>
+<td>259 (74.9%)</td>
+</tr>
+<tr>
+<td class="rowlabel">Sí</td>
+<td>0 (0%)</td>
+<td>0 (0%)</td>
+<td>55 (30.4%)</td>
+<td>55 (15.9%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Missing</td>
+<td class="lastrow">9 (21.4%)</td>
+<td class="lastrow">18 (14.6%)</td>
+<td class="lastrow">5 (2.8%)</td>
+<td class="lastrow">32 (9.2%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">xt_remdesivir</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">No</td>
+<td>30 (71.4%)</td>
+<td>88 (71.5%)</td>
+<td>125 (69.1%)</td>
+<td>243 (70.2%)</td>
+</tr>
+<tr>
+<td class="rowlabel">Sí</td>
+<td>4 (9.5%)</td>
+<td>19 (15.4%)</td>
+<td>51 (28.2%)</td>
+<td>74 (21.4%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Missing</td>
+<td class="lastrow">8 (19.0%)</td>
+<td class="lastrow">16 (13.0%)</td>
+<td class="lastrow">5 (2.8%)</td>
+<td class="lastrow">29 (8.4%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">xt_corticoides</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">No</td>
+<td>13 (31.0%)</td>
+<td>72 (58.5%)</td>
+<td>148 (81.8%)</td>
+<td>233 (67.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel">Sí</td>
+<td>21 (50.0%)</td>
+<td>41 (33.3%)</td>
+<td>26 (14.4%)</td>
+<td>88 (25.4%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Missing</td>
+<td class="lastrow">8 (19.0%)</td>
+<td class="lastrow">10 (8.1%)</td>
+<td class="lastrow">7 (3.9%)</td>
+<td class="lastrow">25 (7.2%)</td>
+</tr>
+<tr>
+<td class="rowlabel firstrow">covidi_reinfeccion</td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+<td class="firstrow"></td>
+</tr>
+<tr>
+<td class="rowlabel">No</td>
+<td>32 (76.2%)</td>
+<td>100 (81.3%)</td>
+<td>118 (65.2%)</td>
+<td>250 (72.3%)</td>
+</tr>
+<tr>
+<td class="rowlabel">Sí</td>
+<td>3 (7.1%)</td>
+<td>8 (6.5%)</td>
+<td>1 (0.6%)</td>
+<td>12 (3.5%)</td>
+</tr>
+<tr>
+<td class="rowlabel lastrow">Missing</td>
+<td class="lastrow">7 (16.7%)</td>
+<td class="lastrow">15 (12.2%)</td>
+<td class="lastrow">62 (34.3%)</td>
+<td class="lastrow">84 (24.3%)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</body>
+</html>
