@@ -5,6 +5,16 @@ library(arsenal)
 library(survival)
 library(gtsummary)
 library(survminer)
+library(purrr)
+library(officer)
+
+# Proporties to print tables as Word.
+sect_properties <- prop_section(
+  page_size = page_size(orient = "landscape",
+                        width = 8.3, height = 11.7),
+  type = "continuous",
+  page_margins = page_mar()
+)
 
 setwd("/home/andres/Escritorio/bioinfo_hematology_unit/react/data")
 
@@ -14,6 +24,7 @@ setwd("/home/andres/Escritorio/bioinfo_hematology_unit/react/data")
 covid_hemato <- read.csv("REVIPRIN_20220725_094416.csv", header = T, sep = ",", check.names = F, stringsAsFactors = T,
                          na.strings =  c("", "0000-00-00", "Desconocido", "DESCONOCIDO", "DESC"), fileEncoding = "iso-8859-3")
 
+initial_vars <- colnames(covid_hemato)
 
 # Identify columns with all values missing.
 missing_variables <- names(which(colSums(is.na(covid_hemato)) == nrow(covid_hemato)))
@@ -26,6 +37,8 @@ missing_variables <- names(which(colSums(is.na(covid_hemato)) == nrow(covid_hema
 
 # Remove variables with all values equal to NA
 covid_hemato <- as.data.frame(covid_hemato[, !names(covid_hemato) %in% missing_variables])
+
+vars_after_miss <- colnames(covid_hemato)
 
 # Remove non-informative variables.
 
@@ -46,7 +59,7 @@ table(covid_hemato$verificado)
 # ultimamodificacion_nombre_hospital, ultimamodificacion_fecha, activo,
 # verificado, lf_medico, lf_email, tph_medico, tph_email.
 
-uninformative_vars <- c("usuario_alta", "id_hospital_alta", "id_hospital_alta",
+uninformative_vars <- c("usuario_alta", "id_hospital_alta",
                         "completo", "id_hospital_ficha", "nombre_hospital_ficha", "ultimamodificacion_usuario",
                         "ultimamodificacion_nombre_hospital", "ultimamodificacion_id_hospital", "activo",
                         "verificado", "lf_medico", "lf_email", "tph_medico", "tph_email")
@@ -67,9 +80,10 @@ covid_hemato <- covid_hemato %>% select(-año_nacimiento)
 
 # Fechas
 # Some date variables will not be used in the project.
-uninterested_dates <- c("f_tph", "xt_molnupiravir_fecha", "xt_hidroxicloroquina_fecha", "xt_baricitinib_fecha",
-                        "xt_remdesivir_fecha", "xt_azitromicina_fecha", "xt_PAXLOVID_fecha", "xt_tocilizumab_fecha", "xt_corticoides_fecha", "covidi_reinfeccion_remdesivir_fecha",
-                        "covidi_reinfeccion_PAXLOVID_fecha", "covidi_reinfeccion_tocilizumab_fecha", "covidi_reinfeccion_corticoides_fecha")
+uninterested_dates <- c("dem_fechanacimiento", "f_tph", "xt_molnupiravir_fecha", "xt_hidroxicloroquina_fecha", "xt_baricitinib_fecha",
+                        "xt_remdesivir_fecha", "xt_azitromicina_fecha", "xt_PAXLOVID_fecha", "xt_tocilizumab_fecha", 
+                        "xt_corticoides_fecha", "covidi_reinfeccion_remdesivir_fecha", "covidi_reinfeccion_PAXLOVID_fecha", 
+                        "covidi_reinfeccion_tocilizumab_fecha", "covidi_reinfeccion_corticoides_fecha")
 
 covid_hemato <- covid_hemato[, !names(covid_hemato) %in% uninterested_dates]
 
@@ -78,7 +92,6 @@ relevant_dates <- c("f_covid19", "dem_ultimoseguimiento_fecha", "covida_status_f
                     "covidi_reinfeccion_vacunacion_fecha", "covidi_reinfeccion_fechaaltaexitus")
 
 covid_hemato[relevant_dates] <- lapply(covid_hemato[relevant_dates], as.Date)
-
 
 # Identify other factor variables. SE AÑADIÓ LA VARIABLE PATOLOGÍA OTROS OBSERVACIONES,
 factor_vars <- c("comor_cardiaca", "comor_pulmonar", "comor_hta", "comor_asma", "comor_renal",
@@ -157,11 +170,10 @@ na_table_hospital$Total_missing_per <- round(na_table_hospital$Total_missing/442
 # Sort in descendant way by total missing values.
 na_table_hospital <- na_table_hospital %>% arrange(Total_missing)
 
-write.csv(na_table_hospital, "missing_values_report.csv", col.names = T, row.names = T)
+write.csv(na_table_hospital, "/home/andres/Escritorio/bioinfo_hematology_unit/react/resultados/missing_report/missing_values_report.csv", col.names = T, row.names = T)
 
 # 2.2 Missing tables by hospital to request data. 
 
-# Generate missing table to H12O.
 # Filter columns complete columns (no NA vars) except "identificador".
 complete_vars <- names(which(colSums(is.na(covid_hemato)) == 0))[c(1, 4:27)]
 
@@ -191,9 +203,6 @@ rm(complete_vars, missing_table, non_interested_vars)
 # na_table_report <- na_table_report[match(new_order, rownames(na_table_report)),]
 
 # write.csv(na_table_report, "missing_report_H12O.csv", sep = ",", col.names = T, row.names = T)
-
-
-
 
 
 # 3 PREPROCESSING II  ------------------------------------------------------------------------------------------------------------
@@ -444,8 +453,6 @@ pat_freq$freq_total <- round(pat_freq$freq_total, 2)
 #write.csv(pat_freq, "list_frequencies_patology.csv", sep = ",", col.names = T, row.names = F)
 
 
-
-
 # 6. ESTABLECIMIENTO DE NUESTRA COHORTE DE ESTUDIO Y PRIMER DESCRIPTIVO ---------------------------------------------------------------------------------------------------------------
 
 #### 6.1 Patient filtering ####
@@ -503,17 +510,21 @@ covid_hemato <- covid_hemato %>% mutate(f_covid19_period = as.factor(ifelse(covi
 
 rm(var_order, dup_v3, f_nac_V2_V3, na_table_hospital, pat_freq, duplicated, V2_data, not_int_patologies)
 
+# Nuevas variables añadidas.
+new_var <- c("edad_grupo", "comorbilidades_suma", "comorbilidades_groups", "mes_año_covid", "diff_ult_seg_fecha_f_covid",
+             "diff_ult_seg_fecha_f_covid_months", "diff_f_covid_dem_vac_f", "covida_gravedad_simplified",
+             "covida_gravedad_maxima_simplified", "dem_ultimoseguimiento_simplified", "f_covid19_period")
+
 
 #### 6.2 Variables selection and recoding ####
 
 #### 6.2.1 Data was subsetted only for descriptive analysis purporse.
-V3_data <- covid_hemato %>% select(f_covid19_period, diff_ult_seg_fecha_f_covid, diff_ult_seg_fecha_f_covid_months, edad, edad_grupo, sexo, comor_cardiaca, comor_pulmonar, comor_hta, 
+V3_data <- covid_hemato %>% select(f_covid19_period, diff_ult_seg_fecha_f_covid, edad, edad_grupo, sexo, comor_cardiaca, comor_pulmonar, comor_hta, 
                                    comor_asma, comor_renal, comor_hepatica, comor_neoplasia, 
                                    comor_diabetes, comor_bmi, comor_reuma, comorbilidades_suma, comorbilidades_groups,
                                    comor_otras, patologia, tph, tratamiento_tipo, manejo, covida_gravedad, covida_gravedad_simplified,
                                    covida_gravedad_maxima, covida_gravedad_maxima_simplified,
-                                   dem_ultimoseguimiento, dem_ultimoseguimiento_simplified, dem_vac_sino, dem_vac_dosis, xt_PAXLOVID, xt_remdesivir, xt_corticoides, 
-                                   covidi_reinfeccion)
+                                   dem_ultimoseguimiento, dem_ultimoseguimiento_simplified, dem_vac_sino, dem_vac_dosis, xt_PAXLOVID)
 
 ## 6.2.2 Recode Patologias.
 V3_data$patologia <- as.factor(sub("\\).*", "", sub(".*\\(", "", V3_data$patologia)))
@@ -549,28 +560,34 @@ table(is.na(V3_data$dem_ultimoseguimiento_simplified))
 
 #write.csv(V3_data, "./V3_data.csv", sep = ",", col.names = TRUE)
 
-# 6.1.14 Definir dataset únicamente con pacientes ingresados 
-V3_data_ingresados <- V3_data %>% filter(manejo == "Ingreso hospitalario")
-
 # 6.1.15 Reorder factor variables
 # Reorder levels for logistic regresion
+# Patología
 V3_data$patologia <- factor(V3_data$patologia, levels = c("NHL", "LH", "LLA", "LLC", "LMA", "LMC", "MM", "SMD"))
 
+# tph
 V3_data$tph <- factor(V3_data$tph, levels = c("NO", "CART", "ALOGENICO", "AUTOLOGO"))
 
+# tratamiento_tipo
 V3_data$tratamiento_tipo <- factor(V3_data$tratamiento_tipo, levels = c("No active therapy", "Conventional QT", "Hypomethylating agents", "IMIDS", "INMUNO-QT", "MoAb", "Molecular targeted",        
                                                                         "Not DETAILLED", "Supportive care"))
-
+# covida_gravedad_maxima_simplified
 V3_data$covida_gravedad_maxima_simplified <- factor(V3_data$covida_gravedad_maxima_simplified, levels = c("BAJA", "ALTA"))
 
+# dem_vac_dosis_groups_1
 V3_data$dem_vac_dosis_groups_1 <- factor(V3_data$dem_vac_dosis_groups_1, levels = c("Bajo", "Alto"))
 
+# dem_vac_dosis_groups_2
 V3_data$dem_vac_dosis_groups_2 <- factor(V3_data$dem_vac_dosis_groups_2, levels = c("Bajo", "Alto"))
 
+# covida_gravedad_maxima
 V3_data$covida_gravedad_maxima <- factor(V3_data$covida_gravedad_maxima, levels = c("LEVE", "MODERADO", "GRAVE", "CRÍTICO"))
 
+# dem_vac_dosis
 V3_data$dem_vac_dosis <- factor(V3_data$dem_vac_dosis, levels = c("1", "0", "2", "3", "4"))
 
+# 6.1.16 Definir dataset únicamente con pacientes ingresados 
+V3_data_ingresados <- V3_data %>% filter(manejo == "Ingreso hospitalario")
 
 
 # 7. DESCRIPTIVO CON VARIABLES RELEVANTES Y NUEVOS PORCENTAJES --------------------------------------------------------------------------------------
@@ -579,16 +596,12 @@ V3_data$dem_vac_dosis <- factor(V3_data$dem_vac_dosis, levels = c("1", "0", "2",
 
 # Factores de interes: Linfoide_mieloide, manejo, dem_vac_sino, xt_Paxlovid_
 
-# dem_ultimoseguimiento_simplified
-
-V3_data_ingresados <- V3_data %>% filter(manejo == "Ingreso hospitalario")
-
+# Dividir data por periodos
 V3_P1 <- V3_data_ingresados %>% filter(f_covid19_period == "Periodo_1")
 V3_P2 <- V3_data_ingresados %>% filter(f_covid19_period == "Periodo_2")
 V3_P3 <- V3_data_ingresados %>% filter(f_covid19_period == "Periodo_3")
 
-table(V3_data$tph)
-
+# Descriptivo periodo 1
 V1_res <- 
   V3_P1 %>%
   select(dem_ultimoseguimiento_simplified, covida_gravedad_maxima_simplified, Linfoide_Mieloide, dem_vac_sino,
@@ -602,7 +615,7 @@ V1_res <-
   )  %>%
   bold_labels()
 
-
+# Descriptivo periodo 2
 V2_res <- 
   V3_P2 %>%
   select(dem_ultimoseguimiento_simplified, covida_gravedad_maxima_simplified, Linfoide_Mieloide, dem_vac_sino, 
@@ -616,7 +629,7 @@ V2_res <-
   )  %>%
   bold_labels()
 
-
+# Descriptivo periodo 3
 V3_res <- 
   V3_P3 %>%
   select(dem_ultimoseguimiento_simplified, covida_gravedad_maxima_simplified, Linfoide_Mieloide, dem_vac_sino,
@@ -630,6 +643,7 @@ V3_res <-
   )  %>%
   bold_labels()
 
+# Descriptivo total
 V3_total <- 
   V3_data_ingresados %>%
   select(dem_ultimoseguimiento_simplified, covida_gravedad_maxima_simplified, Linfoide_Mieloide, dem_vac_sino,
@@ -643,6 +657,7 @@ V3_total <-
   )  %>%
   bold_labels()
 
+# Stack tablas
 tbl_final <-
   tbl_merge(list(V1_res, V2_res, V3_res, V3_total),
             tab_spanner = c("**Periodo 1**", "**Periodo 2**", "**Periodo 3**", "**Total**")) %>%
@@ -650,7 +665,7 @@ tbl_final <-
   gt::tab_header(title = "Table 4. Datos de gravedad máxima en pacientes ingresados")
 
 
-# ODDS RATIO TABLES ---------------------------------------------------------------------------------------------------------------------------
+# 8. ODDS RATIO TABLES ---------------------------------------------------------------------------------------------------------------------------
 
 # Variables de estudio: 
 
@@ -667,178 +682,164 @@ tbl_final <-
 # tph: Referencia NO CAMBIAR
 # tratamiento_tipo: Referencia No activo CAMBIAR
 
-# GLM of interest variables
+#### 8.1 Clinical summary for all patients ####
 
-edad_grupo_tbl <- glm(covida_gravedad_maxima_simplified ~ edad_grupo, data = V3_data, family = binomial()) %>% 
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
+# Frequencies table
+frequencies <- V3_data %>%
+  select(edad_grupo, sexo, f_covid19_period, Delta_Omicron, dem_vac_sino, dem_vac_dosis, covida_gravedad_maxima_simplified,
+         dem_vac_dosis_groups_1, dem_vac_dosis_groups_2, comor_cardiaca, comor_pulmonar, comor_hepatica, comor_hta, comor_renal,
+         comor_hepatica, comor_neoplasia, comor_diabetes, comor_reuma, comor_bmi, comorbilidades_groups, Linfoide_Mieloide, patologia, 
+         tratamiento_tipo, tph, xt_PAXLOVID) %>%
+  tbl_summary(by = covida_gravedad_maxima_simplified, missing = "no", digits = everything() ~ 0,
+              statistic = list(all_categorical() ~ "{n} ({p})")) %>%
+  add_n() %>%
+  add_overall()
 
-sexo_tbl <- glm(covida_gravedad_maxima_simplified ~ sexo, data = V3_data, family = binomial()) %>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
+# Odds ratio table
+or <- V3_data %>% 
+  select(edad_grupo, sexo, f_covid19_period, Delta_Omicron, dem_vac_sino, dem_vac_dosis, covida_gravedad_maxima_simplified,
+         dem_vac_dosis_groups_1, dem_vac_dosis_groups_2, comor_cardiaca, comor_pulmonar, comor_hepatica, comor_hta, comor_renal,
+         comor_hepatica, comor_neoplasia, comor_diabetes, comor_reuma, comor_bmi, comorbilidades_groups, Linfoide_Mieloide, patologia, 
+         tratamiento_tipo, tph, xt_PAXLOVID) %>%
+  tbl_uvregression(
+    method = glm,
+    y = covida_gravedad_maxima_simplified,
+    method.args = list(family = binomial),
+    exponentiate = TRUE,
+    pvalue_fun = ~style_pvalue(.x, digits = 2),
+    hide_n = T) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05) 
 
-manejo_tbl <- glm(covida_gravedad_maxima_simplified ~ manejo, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
+# All patients report.
+all_patients_summ <- tbl_merge(list(frequencies, or), tab_spanner = c("**Patients with COVID-19 severity data, N = 345**", "**Odds Ratio (95% CI)**")) %>%
+              modify_footnote(everything() ~ NA) %>%
+              as_gt() %>%
+              gt::tab_header(title = "Odds Ratio gravedad en todos los pacientes")
 
-delta_omicron_tbl <- glm(covida_gravedad_maxima_simplified ~ Delta_Omicron, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
+#### 8.2 Clinical summary for hospitalize patients ####
+# Frequencies table
+frequencies <- V3_data_ingresados %>%
+  select(edad_grupo, sexo, f_covid19_period, Delta_Omicron, dem_vac_sino, dem_vac_dosis, covida_gravedad_maxima_simplified,
+         dem_vac_dosis_groups_1, dem_vac_dosis_groups_2, comor_cardiaca, comor_pulmonar, comor_hepatica, comor_hta, comor_renal,
+         comor_hepatica, comor_neoplasia, comor_diabetes, comor_reuma, comor_bmi, comorbilidades_groups, Linfoide_Mieloide, patologia, 
+         tratamiento_tipo, tph, xt_PAXLOVID) %>%
+  tbl_summary(by = covida_gravedad_maxima_simplified, missing = "no", digits = everything() ~ 0,
+              statistic = list(all_categorical() ~ "{n} ({p})")) %>%
+  add_n() %>%
+  add_overall()
 
-dem_vac_sino_tbl <- glm(covida_gravedad_maxima_simplified ~ dem_vac_sino, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
+# Odds ratio table
+or <- V3_data_ingresados %>% 
+  select(edad_grupo, sexo, f_covid19_period, Delta_Omicron, dem_vac_sino, dem_vac_dosis, covida_gravedad_maxima_simplified,
+         dem_vac_dosis_groups_1, dem_vac_dosis_groups_2, comor_cardiaca, comor_pulmonar, comor_hepatica, comor_hta, comor_renal,
+         comor_hepatica, comor_neoplasia, comor_diabetes, comor_reuma, comor_bmi, comorbilidades_groups, Linfoide_Mieloide, patologia, 
+         tratamiento_tipo, tph, xt_PAXLOVID) %>%
+  tbl_uvregression(
+    method = glm,
+    y = covida_gravedad_maxima_simplified,
+    method.args = list(family = binomial),
+    exponentiate = TRUE,
+    pvalue_fun = ~style_pvalue(.x, digits = 2),
+    hide_n = T) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05) 
 
-dem_vac_dosis_tbl <-  glm(covida_gravedad_maxima_simplified ~ dem_vac_dosis, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
+# Hospitalize patients report.
+hosp_patients_summ <- tbl_merge(list(frequencies, or), tab_spanner = c("**Patients with COVID-19 severity data, N = 345**", "**Odds Ratio (95% CI)**")) %>%
+  modify_footnote(everything() ~ NA) %>%
+  #as_gt() %>%
+  #gt::tab_header(title = "Odds Ratio gravedad en los pacientes ingresados") %>%
+  as_flex_table() %>%
+  flextable::save_as_docx(path = "report_2.docx", pr_section = sect_properties)
 
-dem_vac_dosis_g1_tbl <-  glm(covida_gravedad_maxima_simplified ~ dem_vac_dosis_groups_1, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
+rm(or, frequencies)
 
-dem_vac_dosis_g2_tbl <-  glm(covida_gravedad_maxima_simplified ~ dem_vac_dosis_groups_2, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-comor_cardiaca_tbl <- glm(covida_gravedad_maxima_simplified ~ comor_cardiaca, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-comor_pulmonar_tbl <- glm(covida_gravedad_maxima_simplified ~ comor_pulmonar, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-comor_hepatica_tbl <- glm(covida_gravedad_maxima_simplified ~ comor_hepatica, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-comor_hta_tbl<- glm(covida_gravedad_maxima_simplified ~ comor_hta, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-comor_asma_tbl <- glm(covida_gravedad_maxima_simplified ~ comor_asma, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-comor_renal_tbl <- glm(covida_gravedad_maxima_simplified ~ comor_renal, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-comor_neoplasia_tbl <- glm(covida_gravedad_maxima_simplified ~ comor_neoplasia, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-comor_diabetes_tbl <- glm(covida_gravedad_maxima_simplified ~ comor_diabetes, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-comor_bmi_tbl <- glm(covida_gravedad_maxima_simplified ~ comor_bmi, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-comor_reuma_tbl <- glm(covida_gravedad_maxima_simplified ~ comor_reuma, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-comorbilidades_groups_tbl <- glm(covida_gravedad_maxima_simplified ~ comorbilidades_groups, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-linf_mielo_tbl <- glm(covida_gravedad_maxima_simplified ~ Linfoide_Mieloide, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-patologia_tbl <- glm(covida_gravedad_maxima_simplified ~ patologia, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-tto_tipo_tbl <- glm(covida_gravedad_maxima_simplified ~ tratamiento_tipo, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-tph_tbl <- glm(covida_gravedad_maxima_simplified ~ tph, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-paxl_tbl <- glm(covida_gravedad_maxima_simplified ~ xt_PAXLOVID, data = V3_data, family = binomial())%>%
-  tbl_regression(., exponentiate = TRUE, pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% bold_labels() %>% italicize_levels()%>% bold_p(t = .05)
-
-tbl_stack(list(edad_grupo_tbl, sexo_tbl, delta_omicron_tbl, dem_vac_sino_tbl, dem_vac_dosis_tbl,dem_vac_dosis_g1_tbl, dem_vac_dosis_g2_tbl,
-               comor_cardiaca_tbl, comor_pulmonar_tbl, comor_hepatica_tbl, comor_hta_tbl, comor_asma_tbl, comor_renal_tbl, 
-               comor_diabetes_tbl, comor_neoplasia_tbl, comor_bmi_tbl, comor_reuma_tbl, comorbilidades_groups_tbl,
-               linf_mielo_tbl, patologia_tbl, tto_tipo_tbl, tph_tbl, paxl_tbl)) %>% as_gt()%>%
-  gt::tab_header(title = "Odds Ratio gravedad en todos los pacientes")
-
-rm(list = ls(pattern = "_tbl"))
-
+# IMPORTANT: IT IS POSSIBLE TO SAVE ALL TABLES IN A WORD DOCUMENT.
 
 # 8. SURVIVAL ANALYSIS -------------------------------------------------------------------------------------------------------------------------------------------------
 
 # ESTE MISMO BLOQUE DE CÓDIGO SE UTILIZÓ PARA EL TOTAL DE PACIENTES Y PARA LOS PACIENTES INGRESADOS (V3_data y V3_data_ingresados)
 
-# N = 323 because patients with negative diff_ult_seg_fecha_f_covid were filtered out.
-V3_surv_data <- V3_data %>% filter(diff_ult_seg_fecha_f_covid >= 0 & manejo == "Ingreso hospitalario")
+#### 8.1 Survival report for all patients ####
+
+# N = 333 because patients with negative diff_ult_seg_fecha_f_covid were filtered out.
+V3_surv_data <- V3_data %>% filter(diff_ult_seg_fecha_f_covid >= 0)
 
 # Specify dead as 1 and alive as 0.
 V3_surv_data$dem_ultimoseguimiento_simplified <- as.numeric(ifelse(V3_surv_data$dem_ultimoseguimiento_simplified == "Muerto", 1, 0))
 
-# 8.1 Survival probabilities.
-V3_surv_prob <-  list(
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ f_covid19_period, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ Delta_Omicron, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ edad_grupo, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ sexo, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ comorbilidades_groups, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ Linfoide_Mieloide, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ patologia, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ covida_gravedad_maxima, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ covida_gravedad_maxima_simplified, V3_surv_data),
-    #survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ manejo, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ dem_vac_sino, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ dem_vac_dosis, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ dem_vac_dosis_groups_1, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ dem_vac_dosis_groups_2, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ tratamiento_tipo, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ tph, V3_surv_data),
-    survfit(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ xt_PAXLOVID, V3_surv_data)
-  ) %>%
-    tbl_survfit(
-  times = c(30, 60, 90),
-  label_header = "**{time} Days**",
-  estimate_fun = style_percent) %>%
-  bold_labels() 
+# Survival probabilities at time 30, 60 and 90 days.
+surv_prob <- V3_surv_data %>% 
+      select(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified, f_covid19_period, Delta_Omicron, edad_grupo, sexo, comorbilidades_groups,
+             Linfoide_Mieloide, patologia, covida_gravedad_maxima, covida_gravedad_maxima_simplified, manejo, dem_vac_sino, dem_vac_dosis,
+             dem_vac_dosis_groups_1, dem_vac_dosis_groups_2, tratamiento_tipo, tph, xt_PAXLOVID) %>%
+     tbl_survfit(
+      .,
+      y = Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified),
+      times = c(30, 60, 90),
+      label_header = "**{time} Days**",
+      estimate_fun = style_percent) %>%
+      bold_labels() %>% 
+      italicize_levels()
 
-V3_surv_prob
+# Hazard Ratios
+hr <- V3_surv_data %>% 
+      select(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified, f_covid19_period, Delta_Omicron, edad_grupo, sexo, comorbilidades_groups,
+             Linfoide_Mieloide, patologia, covida_gravedad_maxima, covida_gravedad_maxima_simplified, manejo, dem_vac_sino, dem_vac_dosis,
+             dem_vac_dosis_groups_1, dem_vac_dosis_groups_2, tratamiento_tipo, tph, xt_PAXLOVID) %>%
+      tbl_uvregression(
+        method = coxph,
+        y = Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified),
+        exponentiate = TRUE,
+        pvalue_fun = function(x) style_pvalue(x, digits = 2),
+        hide_n = T
+      ) %>% 
+      bold_labels() %>%
+      italicize_levels() %>%
+      bold_p(t = .05) 
 
-# 8.2 Hazard Ratios
-
-V3_surv_data$edad_grupo <- factor(V3_surv_data$edad_grupo, levels = c("49-59", "18-49", "59-69", "69-79", ">=80"))
-levels(V3_surv_data$edad_grupo)
-
-hr_f_covid19_p <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ f_covid19_period, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_delta_omicron <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ Delta_Omicron, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_edad_grupo <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ edad_grupo, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_sexo <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ sexo, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_comorbilidades_groups <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ comorbilidades_groups, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_Linfoide_Mieloide <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ Linfoide_Mieloide, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_patologia <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ patologia, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_covida_gravedad_maxima <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ covida_gravedad_maxima, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_covida_gravedad_maxima_simplified <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ covida_gravedad_maxima_simplified, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_dem_vac_sino <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ dem_vac_sino, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_dem_vac_dosis <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ dem_vac_dosis, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_dem_vac_dosis_groups_1 <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ dem_vac_dosis_groups_1, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_dem_vac_dosis_groups_2 <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ dem_vac_dosis_groups_2, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_tto_tipo <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ tratamiento_tipo, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_tph <- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ tph, V3_surv_data) %>% tbl_regression(exponentiate = TRUE)
-
-hr_paxlovid<- coxph(Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified) ~ xt_PAXLOVID, V3_surv_data)%>% tbl_regression(exponentiate = TRUE)
-
-
-hazard <- tbl_stack(list(hr_f_covid19_p, hr_delta_omicron, hr_edad_grupo, hr_sexo, hr_comorbilidades_groups,
-               hr_Linfoide_Mieloide, hr_patologia, hr_covida_gravedad_maxima, hr_covida_gravedad_maxima_simplified,
-               hr_dem_vac_sino, hr_dem_vac_dosis, hr_dem_vac_dosis_groups_1, hr_dem_vac_dosis_groups_2,
-               hr_tto_tipo, hr_tph, hr_paxlovid)) %>% bold_labels()
-
-
-surv_hazard <-
-  tbl_merge(list(V3_surv_prob, hazard),
-            tab_spanner = c("**Survival estimate, % (95% CI)**", "**Hazard ratio (95%-CI)**")) %>% 
+# Merge both tables
+surv_all <- tbl_merge(list(surv_prob, hr), 
+                      tab_spanner = c("**Survival estimate, % (95% CI)**", "**Hazard ratio (95%-CI)**")) %>%
   as_gt()%>%
-  gt::tab_header(title = "Probabilidad de supervivencia y HR en los pacientes ingresados (N = 120)")
+  gt::tab_header(title = "Probabilidad de supervivencia y HR en todos los pacientes (N = 333)")
 
+#### 8.2 Survival report for hospitalized patients ####
 
+# Survival probabilities at time 30, 60 and 90 days.
+surv_prob <- V3_surv_data_ingresados %>% 
+  select(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified, f_covid19_period, Delta_Omicron, edad_grupo, sexo, comorbilidades_groups,
+         Linfoide_Mieloide, patologia, covida_gravedad_maxima, covida_gravedad_maxima_simplified, manejo, dem_vac_sino, dem_vac_dosis,
+         dem_vac_dosis_groups_1, dem_vac_dosis_groups_2, tratamiento_tipo, tph, xt_PAXLOVID) %>%
+  tbl_survfit(
+    .,
+    y = Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified),
+    times = c(30, 60, 90),
+    label_header = "**{time} Days**",
+    estimate_fun = style_percent) %>%
+  bold_labels() %>% 
+  italicize_levels()
+
+# Hazard Ratios
+hr <- V3_surv_data_ingresados %>% 
+  select(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified, f_covid19_period, Delta_Omicron, edad_grupo, sexo, comorbilidades_groups,
+         Linfoide_Mieloide, patologia, covida_gravedad_maxima, covida_gravedad_maxima_simplified, manejo, dem_vac_sino, dem_vac_dosis,
+         dem_vac_dosis_groups_1, dem_vac_dosis_groups_2, tratamiento_tipo, tph, xt_PAXLOVID) %>%
+  tbl_uvregression(
+    method = coxph,
+    y = Surv(diff_ult_seg_fecha_f_covid, dem_ultimoseguimiento_simplified),
+    exponentiate = TRUE,
+    pvalue_fun = function(x) style_pvalue(x, digits = 2),
+    hide_n = T
+  ) %>% 
+  bold_labels() %>%
+  italicize_levels() %>%
+  bold_p(t = .05) 
+
+# Merge both tables
+surv_ingresados <- tbl_merge(list(surv_prob, hr), 
+                      tab_spanner = c("**Survival estimate, % (95% CI)**", "**Hazard ratio (95%-CI)**")) %>%
+  as_gt()%>%
+  gt::tab_header(title = "Probabilidad de supervivencia y HR en pacientes ingresados (N = 120)")
+
+#### 8.1 Survival graphs ####
 
 ggsurvplot(
   fit = survfit(Surv(diff_ult_seg_fecha_f_covid, as.numeric(dem_ultimoseguimiento_simplified)) ~ Delta_Omicron + covida_gravedad_maxima_simplified, V3_surv_data), 
